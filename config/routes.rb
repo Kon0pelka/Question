@@ -1,4 +1,22 @@
 Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      get 'questions/show'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      get 'questions/index'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      get 'questions/create'
+    end
+  end
+
   post 'user_token' => 'user_token#create'
   namespace :api do
     namespace :v1 do
