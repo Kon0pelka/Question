@@ -10,47 +10,56 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180511080259) do
+ActiveRecord::Schema.define(version: 20180517065352) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "categories", force: :cascade do |t|
-    t.string "name", limit: 50, null: false
-    t.integer "questions_category_id"
+  create_table "answers", force: :cascade do |t|
+    t.integer "question_id"
+    t.integer "autor_id"
+    t.text "info"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["questions_category_id"], name: "index_categories_on_questions_category_id"
+    t.index ["autor_id"], name: "index_answers_on_autor_id"
+    t.index ["question_id", "autor_id"], name: "index_answers_on_question_id_and_autor_id", unique: true
+    t.index ["question_id"], name: "index_answers_on_question_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name", limit: 50, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "questions", force: :cascade do |t|
-    t.string "title", limit: 50
+    t.string "title", limit: 64
     t.text "info", null: false
-    t.integer "category_id", null: false
-    t.boolean "status"
+    t.integer "status", default: 0
     t.integer "autor_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "answer_id"
     t.index ["autor_id"], name: "index_questions_on_autor_id"
-    t.index ["category_id"], name: "index_questions_on_category_id"
   end
 
   create_table "questions_categories", force: :cascade do |t|
-    t.integer "questions_id"
+    t.integer "question_id"
     t.integer "category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_questions_categories_on_category_id"
-    t.index ["questions_id", "category_id"], name: "index_questions_categories_on_questions_id_and_category_id", unique: true
-    t.index ["questions_id"], name: "index_questions_categories_on_questions_id"
+    t.index ["question_id", "category_id"], name: "index_questions_categories_on_question_id_and_category_id", unique: true
+    t.index ["question_id"], name: "index_questions_categories_on_question_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "email", limit: 255
     t.string "nick", limit: 50
-    t.string "password", limit: 30
+    t.string "password_digest", limit: 64
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["nick"], name: "index_users_on_nick", unique: true
   end
