@@ -5,11 +5,12 @@ class User < ApplicationRecord
     validates :email, presence: true, length: { maximum: 255 },
                     format:   { with: VALID_EMAIL_REGEX },
                     uniqueness: { case_sensitive: false }
-    validates :password, length: { in: 6..20 }, presence: true
+    validates :password_digest, length: { maximum: 64 }, presence: true
     validates :nick, presence: true, length: { maximum: 50 }, uniqueness: true
     
-    private
-    
+    has_many :questions, foreign_key: 'autor_id', dependent: :destroy
+    has_many :answers, foreign_key: 'autor_id', dependent: :destroy
+    private  
     # Преобразует адрес электронной почты в нижний регистр.
     def downcase_email
         self.email = email.downcase
