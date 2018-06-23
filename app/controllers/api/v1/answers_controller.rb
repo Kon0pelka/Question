@@ -1,6 +1,6 @@
 class Api::V1::AnswersController < ApplicationController
   before_action :authenticate_user
-#  before_action :admin_user, only: [:index]
+  before_action :admin_user, only: [:index]
   before_action :set_answer, only: [:delete, :update]
 
   def index
@@ -13,6 +13,7 @@ class Api::V1::AnswersController < ApplicationController
     answer.question_id = params[:question_id]
     authorize answer
     if answer.save
+      UserMailMailer.delay.answer_set(answer.question.autor, answer.question)
       render json: answer.question, status: :created, location: api_v1_question_url(answer.question)
     else
       render json: { errors: answer.errors.full_messages }, status: :unprocessable_entity

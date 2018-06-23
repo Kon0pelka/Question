@@ -27,6 +27,8 @@ class Api::V1::QuestionsController < ApplicationController
     answer = question.answers.find(params[:answer_id])
     if answer
       question.close_question(answer)
+      UserMailMailer.delay.best_answer(Answer.find(question.answer_id).autor, question)
+      set_mail(question)
       render json: question, status: :accepted, location: api_v1_question_url(question)
     else
     render json: question, status: :unprocessable_entity, location: api_v1_question_url(question)
@@ -34,6 +36,16 @@ class Api::V1::QuestionsController < ApplicationController
   end
 
   private 
+
+  def set_mail(question)
+    answers=question.answers
+    answers.each do |answer|
+      if question.answer_id != answer.id
+        UserMailMailer.delay.question_close(answer.autor,question)
+      end
+    end       
+    
+  end
 
   def set_question
     @question = Question.find(params[:id])
